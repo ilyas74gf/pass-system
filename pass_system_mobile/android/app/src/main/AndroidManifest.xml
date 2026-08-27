@@ -1,0 +1,66 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- 🌐 İnternet Erişimi İzni -->
+    <uses-permission android:name="android.permission.INTERNET"/>
+
+    <!-- 📍 Konum (GPS) İzinleri -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+
+    <!-- 🛰️ Donanımsal Gerçek GPS Çipi Kullanım Zorunluluğu -->
+    <uses-feature android:name="android.hardware.location.gps" android:required="true" />
+
+    <application
+        android:label="pass_system_mobile"
+        android:name="${applicationName}"
+        android:icon="@mipmap/ic_launcher"
+        android:usesCleartextTraffic="true">
+        
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:launchMode="singleTop"
+            android:taskAffinity=""
+            android:theme="@style/LaunchTheme"
+            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
+            android:hardwareAccelerated="true"
+            android:windowSoftInputMode="adjustResize">
+            
+            <meta-data
+              android:name="io.flutter.embedding.android.NormalTheme"
+              android:resource="@style/NormalTheme"
+              />
+
+            <!-- Normal Uygulama Başlatma Filtresi -->
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+
+            <!-- 🔗 Deep Link / App Link Filtresi (Mail Bağlantıları İçin) -->
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <!-- IP adresi üzerinden tıklanan linkler için -->
+                <data android:scheme="http" android:host="192.168.3.13" android:port="5000" android:pathPrefix="/create-password" />
+                <data android:scheme="https" android:host="192.168.3.13" android:port="5000" android:pathPrefix="/create-password" />
+
+                <!-- Özel Şema (Örn: passsystem://create-password) -->
+                <data android:scheme="passsystem" android:host="create-password" />
+            </intent-filter>
+        </activity>
+
+        <meta-data
+            android:name="flutterEmbedding"
+            android:value="2" />
+    </application>
+
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.PROCESS_TEXT"/>
+            <data android:mimeType="text/plain"/>
+        </intent>
+    </queries>
+</manifest>

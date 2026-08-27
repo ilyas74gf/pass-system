@@ -1,0 +1,132 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum Role {
+  ADMIN
+  USER
+  MANAGER
+}
+
+model Company {
+  id        String    @id @default(uuid())
+  name      String
+  floor     String?
+  doorNo    String?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime? @updatedAt
+
+  users User[]
+}
+
+model User {
+  id                   String    @id @default(uuid())
+  email                String    @unique
+  name                 String?
+  employeeId           String?   @unique
+  profilePicture       String?
+  password             String?
+  title                String?  
+  phone                String?
+  status               String?   @default("OUTSIDE")
+  role                 Role      @default(USER)
+  isActive             Boolean   @default(false)
+  isBlocked            Boolean   @default(false)
+  deviceId             String?   // Ana Cihaz UUID
+  deviceIds            String[]  @default([]) // Kayıtlı Yetkili Cihaz UUID Listesi
+  tokenVersion         Int       @default(0)  // Şifre değişiminde oturum kapatma kontrolü
+  resetPasswordToken   String?
+  resetPasswordExpires DateTime?
+  createdAt            DateTime  @default(now())
+  updatedAt            DateTime? @updatedAt
+
+  companyId String?
+  company   Company? @relation(fields: [companyId], references: [id], onDelete: SetNull)
+
+  accessLogs    accessLog[]
+  passLogs      passLog[]
+  violations    violation[]
+  securityAlerts SecurityAlert[]
+}
+
+model Gate {
+  id         String      @id @default(uuid())
+  name       String?
+  accessLogs accessLog[]
+}
+
+model accessLog {
+  id        String   @id @default(uuid())
+  userId    String?
+  gateId    String?
+  direction String?
+  type      String?
+  deviceId  String?  // Geçişin Yapıldığı Cihaz UUID'si
+  createdAt DateTime @default(now())
+
+  user User? @relation(fields: [userId], references: [id], onDelete: Cascade)
+  gate Gate? @relation(fields: [gateId], references: [id], onDelete: SetNull)
+}
+
+model passLog {
+  id        String   @id @default(uuid())
+  userId    String?
+  userName  String?
+  type      String?
+  status    String?
+  gateName  String?
+  message   String?
+  date      String?
+  timestamp String?
+  deviceId  String?  // Geçişin Yapıldığı Cihaz UUID'si
+  createdAt DateTime @default(now())
+
+  user User? @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model violation {
+  id        String   @id @default(uuid())
+  userId    String?
+  createdAt DateTime @default(now())
+
+  user User? @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model SecurityAlert {
+  id        String    @id @default(uuid())
+  type      String
+  severity  String    @default("HIGH")
+  userId    String?
+  message   String
+  details   String?   @db.Text
+  createdAt DateTime  @default(now())
+  updatedAt DateTime? @updatedAt
+
+  user User? @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model SystemSetting {
+  id                   String   @id @default("default")
+  antiPassbackTimeout  Int      @default(60)
+  maxFrequencyAttempts Int      @default(3)
+  qrExpirySeconds      Int      @default(30)
+  maxQrGenerationCount Int      @default(5)
+  qrLimitWindowMinutes Int      @default(5)
+  qrCooldownMinutes    Int      @default(3)
+  systemName           String   @default("Güvenli QR Geçiş Kontrol Sistemi")
+  logRetentionDays     Int      @default(90)
+  latitude             String   @default("41.0082")
+  longitude            String   @default("28.9784")
+  geofenceRadiusMeters Int      @default(150)
+  
+  //  Cihaz Kilit Parametreleri
+  enforceDeviceBinding Boolean  @default(true)
+  maxDevicesPerUser    Int      @default(1)
+
+  updatedAt            DateTime @updatedAt
+}

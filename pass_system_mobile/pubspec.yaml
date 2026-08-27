@@ -1,0 +1,42 @@
+name: pass_system_mobile
+description: "Güvenli Geçiş Sistemi Mobil Uygulaması"
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # Sayfa Yönlendirme
+  go_router: ^13.2.0
+
+  # Durum Yönetimi (State Management)
+  flutter_riverpod: ^2.5.1
+
+  # HTTP ve API İşlemleri
+  http: ^1.2.0
+
+  # Güvenli Depolama ve Donanım
+  flutter_secure_storage: ^9.0.0
+  device_info_plus: ^11.0.0
+  no_screenshot: ^1.2.0
+  geolocator: ^10.1.0
+  qr_flutter: ^4.1.0
+  screen_brightness: ^2.1.11
+  crypto: ^3.0.7
+  shared_preferences: ^2.2.2
+  logger: ^2.7.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.0
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/images/logo.jpg
